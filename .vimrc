@@ -30,3 +30,5 @@ set termguicolors
 let mapleader=" "
 set clipboard=unnamedplus
 map <C-t> :NERDTreeToggle<CR>
+map <C-f> :Files<CR>
+map <Leader>f :Rg<Space>
