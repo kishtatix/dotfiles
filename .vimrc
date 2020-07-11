@@ -19,6 +19,7 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'junegunn/fzf'
 Plugin 'junegunn/fzf.vim'
 Plugin 'preservim/nerdtree'
+Plugin 'tpope/vim-fugitive'
 
 call vundle#end()
 
