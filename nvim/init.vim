@@ -10,7 +10,7 @@ set relativenumber
 set nu
 set nocompatible
 set cmdheight=2
-set completeopt=menuone,noinsert,noselect
+"set completeopt=menuone,noinsert,noselect
 set noswapfile
 set backupdir=~/.vim/backup//
 set undodir=~/.vim/undo//
@@ -28,6 +28,8 @@ Plug 'tpope/vim-fugitive'
 Plug 'vimwiki/vimwiki'
 Plug 'voldikss/vim-floaterm'
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'voldikss/vim-translator'
 
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -49,9 +51,14 @@ Plug 'mfussenegger/nvim-dap'
 Plug 'theHamsta/nvim-dap-virtual-text'
 Plug 'rcarriga/nvim-dap-ui'
 
+" Plug 'voldikss/vim-translator'
+
 " Plug 'github/copilot.vim'
 
 call plug#end()
+
+let g:translator_target_lang = 'ru'
+let g:translator_default_engines = ['google']
 
 filetype plugin indent on
 colorscheme tokyonight
@@ -71,6 +78,7 @@ nnoremap <Leader>k :cp<CR>
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
+nnoremap   <silent>   <Leader>t    :Translate<CR>
 nnoremap   <silent>   <F7>    :FloatermNew<CR>
 nnoremap   <silent>   <Leader>tt  :FloatermNew --autoclose=0 cargo build<CR>
 nnoremap   <silent>   <Leader>tr  :FloatermNew --autoclose=0 cargo run<CR>
@@ -80,11 +88,14 @@ map <C-f> <cmd>Telescope find_files<CR>
 map <Leader>' <cmd>Telescope oldfiles<CR>
 map <Leader>f :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})<CR>
 
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
 
 lua <<EOF
     require'nvim-treesitter.configs'.setup {
       -- A list of parser names, or "all"
-      ensure_installed = { "help", "c_sharp", "go", "rust" },
+      ensure_installed = { "help", "c_sharp", "go", "rust", "python" },
 
       -- Install parsers synchronously (only applied to `ensure_installed`)
       sync_install = false,
@@ -105,7 +116,7 @@ lua <<EOF
       },
     }
 
- require('telescope').load_extension('fzy_native')
+ --require('telescope').load_extension('fzy_native')
  require('telescope').setup {
      defaults = {
          file_sorter = require('telescope.sorters').get_fzy_sorter,
@@ -132,9 +143,10 @@ require'lspconfig'.omnisharp.setup {
       AutomaticWorkspaceInit = true,
     },
 }
-
+local util = require("lspconfig/util")
 require'lspconfig'.gopls.setup{}
 require'lspconfig'.rust_analyzer.setup{}
+
 
 local opts = {
     tools = { -- rust-tools options
@@ -326,7 +338,9 @@ nnoremap <silent> <Leader>b <Cmd>lua require'dap'.toggle_breakpoint()<CR>
 
 nnoremap <leader>gb :Telescope git_branches<CR>
 
-nnoremap <leader>gd <cmd>lua vim.lsp.buf.definition()<CR>
+nmap <silent> <leader>gd <Plug>(coc-definition)
+"nnoremap <leader>gd <cmd>lua vim.lsp.buf.definition()<CR>
+
 nnoremap <leader>gD <cmd>lua vim.lsp.buf.declaration()<CR>
 nnoremap <leader>gu <cmd>lua vim.lsp.buf.references()<CR>
 nnoremap <leader>gi <cmd>lua vim.lsp.buf.implementation()<CR>
@@ -336,6 +350,7 @@ vnoremap <leader><CR> <cmd>lua vim.lsp.buf.range_code_action()<CR>
 nnoremap <leader>H <cmd>lua vim.lsp.buf.hover()<CR>
 nnoremap <leader>hh <cmd>lua vim.lsp.buf.signature_help()<CR>
 nnoremap <leader>cf <cmd>lua vim.lsp.buf.formatting()<CR>
+
 
 augroup KLYAKSIK
     autocmd!
