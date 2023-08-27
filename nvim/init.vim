@@ -54,6 +54,14 @@ Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 
 Plug 'Hoffs/omnisharp-extended-lsp.nvim'
 Plug 'ray-x/lsp_signature.nvim'
+
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-neotest/neotest-plenary'
+Plug 'nvim-neotest/neotest-vim-test'
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'antoinemadec/FixCursorHold.nvim'
+Plug 'nvim-neotest/neotest'
+Plug 'Issafalcon/neotest-dotnet'
 " Plug 'voldikss/vim-translator'
 
 " Plug 'github/copilot.vim'
@@ -88,12 +96,8 @@ nnoremap   <silent>   <Leader>tr  :FloatermNew --autoclose=0 cargo run<CR>
 tnoremap   <silent>   <F7> <C-\><C-n><CR>
 
 map <C-f> <cmd>Telescope find_files<CR>
+map <Leader>f <cmd>Telescope live_grep<CR>
 map <Leader>' <cmd>Telescope oldfiles<CR>
-map <Leader>f :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})<CR>
-
-"inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
-"                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
 
 lua <<EOF
     require'nvim-treesitter.configs'.setup {
@@ -251,6 +255,18 @@ require'lspconfig'.omnisharp.setup{
     cmd = { '/usr/bin/OmniSharp', '--languageserver' }
 }
 
+require("neotest").setup({
+  adapters = {
+    require("neotest-dotnet")({
+      dap = { justMyCode = false },
+    }),
+    require("neotest-plenary"),
+    require("neotest-vim-test")({
+      ignore_file_types = { "python", "vim", "lua" },
+    }),
+  },
+})
+
 EOF
 
 nnoremap <leader>gb :Telescope git_branches<CR>
@@ -267,6 +283,7 @@ vnoremap <leader><CR> <cmd>lua vim.lsp.buf.range_code_action()<CR>
 nnoremap <leader>H <cmd>lua vim.lsp.buf.hover()<CR>
 nnoremap <leader>hh <cmd>lua vim.lsp.buf.signature_help()<CR>
 nnoremap <leader>cf <cmd>lua vim.lsp.buf.format()<CR>
+nnoremap <leader>gt <cmd>lua require("neotest").run.run()<CR>
 
 augroup KLYAKSIK
     autocmd!
